@@ -214,3 +214,5 @@ firebase deploy --only hosting
 - **iOS (Safari)**: Tap the Share button $\rightarrow$ **"Add to Home Screen"**.
 - Once installed, FlatMate runs full-screen like a native app, works with safe-area insets on notched phones, supports offline viewing, and caches app assets locally.
 
+#   F l a t e m a t e  
+ 
