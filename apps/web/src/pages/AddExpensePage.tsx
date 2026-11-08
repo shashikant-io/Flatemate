@@ -161,33 +161,33 @@ export function AddExpensePage() {
   if (showSuccess) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-4 animate-scale-in">
-        <Card className="rounded-hero p-8 text-center max-w-sm w-full space-y-5 shadow-xl border-emerald-500/30">
-          <div className="mx-auto h-16 w-16 rounded-full bg-emerald-500/15 text-emerald-500 flex items-center justify-center">
+        <Card className="rounded-hero p-8 text-center max-w-sm w-full space-y-5 bg-[#101120] border border-white/[0.08] shadow-[0_12px_40px_rgba(0,0,0,0.55)]">
+          <div className="mx-auto h-16 w-16 rounded-3xl bg-[#25D6B0]/15 text-[#25D6B0] border border-[#25D6B0]/30 flex items-center justify-center shadow-[0_0_25px_rgba(37,214,176,0.35)]">
             <CheckCircle2 className="h-9 w-9 stroke-[2.5]" />
           </div>
 
           <div>
-            <h3 className="font-heading font-extrabold text-2xl text-foreground">
+            <h3 className="font-heading font-extrabold text-2xl text-white">
               Expense Recorded!
             </h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              Live split updated for Shashikant & Nitesh.
+            <p className="text-xs text-[#A1A5BC] mt-1">
+              Live split updated and cached for offline access.
             </p>
           </div>
 
           <div className="space-y-2 pt-2">
             <Button
-              variant="saffron"
+              variant="primary"
               size="lg"
-              className="w-full font-bold shadow-raised"
+              className="w-full font-bold shadow-[0_8px_25px_-4px_rgba(49,91,255,0.5)] bg-gradient-to-r from-[#1745D1] to-[#4169FF] text-white hover:brightness-110 active:scale-[0.98] border border-blue-400/25"
               onClick={resetForm}
             >
               Add Another Expense
             </Button>
             <Button
-              variant="outline"
+              variant="secondary"
               size="lg"
-              className="w-full"
+              className="w-full bg-[#15182B] hover:bg-[#1A1E35] text-white border border-white/[0.08]"
               onClick={() => navigate('/')}
             >
               Go to Dashboard
@@ -205,31 +205,31 @@ export function AddExpensePage() {
         <div className="flex items-center gap-3">
           <Link
             to="/"
-            className="p-2 rounded-xl border border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-            aria-label="Back to home"
+            className="p-2.5 rounded-xl border border-white/[0.08] bg-[#101120] hover:bg-[#15182B] text-[#A1A5BC] hover:text-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="Back to dashboard"
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h2 className="text-2xl font-heading font-extrabold tracking-tight">
+            <h2 className="text-2xl font-heading font-extrabold tracking-tight text-white">
               Add Expense
             </h2>
-            <p className="text-xs text-muted-foreground">Record item, amount, and payer</p>
+            <p className="text-xs text-[#737A95]">Record purchase, amount, and payer</p>
           </div>
         </div>
       </div>
 
       {/* Hero Amount Field */}
-      <Card className="rounded-card p-6 text-center space-y-2 border-2 border-amber-500/30 shadow-josh bg-card/95 backdrop-blur-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/10 rounded-full blur-2xl pointer-events-none" />
+      <Card className="rounded-hero p-6 text-center space-y-2 border border-white/[0.08] shadow-[0_12px_40px_rgba(0,0,0,0.45)] bg-[#101120] relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-36 h-36 bg-[#315BFF]/15 rounded-full blur-3xl pointer-events-none" />
         <label
           htmlFor="expense-amount"
-          className="text-xs uppercase tracking-wider font-bold text-muted-foreground block"
+          className="text-xs uppercase tracking-wider font-bold text-[#A1A5BC] block"
         >
-          Amount in Rupees
+          Amount in Rupees (₹)
         </label>
-        <div className="flex items-center justify-center text-4xl md:text-5xl font-heading font-black text-foreground">
-          <span className="text-amber-500 mr-2 font-black">₹</span>
+        <div className="flex items-center justify-center text-4xl md:text-5xl font-heading font-black text-white">
+          <span className="text-[#477BFF] mr-2 font-black">₹</span>
           <input
             id="expense-amount"
             type="number"
@@ -243,7 +243,7 @@ export function AddExpensePage() {
                 setErrors((prev) => ({ ...prev, amount: '', amountPaise: '' }));
               }
             }}
-            className="w-60 bg-transparent text-center focus:outline-none font-heading font-black tracking-tight placeholder:text-muted-foreground/30 text-foreground"
+            className="w-60 bg-transparent text-center focus:outline-none font-heading font-black tracking-tight placeholder:text-[#737A95]/40 text-white"
             autoFocus
           />
         </div>
@@ -255,10 +255,10 @@ export function AddExpensePage() {
       </Card>
 
       {/* Main Details Card */}
-      <Card className="rounded-card p-5 space-y-5 shadow-card">
+      <Card className="rounded-card p-5 space-y-5 bg-[#101120] border border-white/[0.08] shadow-card">
         {/* Item Name Input & Chips */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground block">
+          <label className="text-xs font-semibold text-[#A1A5BC] block">
             What was purchased? <span className="text-destructive">*</span>
           </label>
           <Input
@@ -282,7 +282,7 @@ export function AddExpensePage() {
                   setItem(quick.name);
                   setCategory(quick.category);
                 }}
-                className="px-2.5 py-1 rounded-lg text-xs bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-colors border border-border/60 hover:border-amber-500/40"
+                className="px-2.5 py-1 rounded-lg text-xs bg-[#15182B] hover:bg-[#1C2038] text-[#A1A5BC] hover:text-white transition-colors border border-white/[0.08] hover:border-[#477BFF]/40"
               >
                 + {quick.name}
               </button>
@@ -292,18 +292,18 @@ export function AddExpensePage() {
 
         {/* Paid By Segmented Control */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-muted-foreground block">
+          <label className="text-xs font-semibold text-[#A1A5BC] block">
             Who paid?
           </label>
-          <div className="grid grid-cols-2 gap-2 p-1.5 bg-muted rounded-xl">
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-[#15182B] rounded-2xl border border-white/[0.08]">
             <button
               type="button"
               onClick={() => setPaidBy('shashikant')}
               className={cn(
-                'py-2.5 rounded-lg text-sm font-bold transition-all min-h-[44px]',
+                'py-2.5 rounded-xl text-sm font-bold transition-all min-h-[44px]',
                 paidBy === 'shashikant'
-                  ? 'bg-gradient-to-r from-teal-600 to-emerald-500 text-white shadow-teal-glow'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-slate-950 shadow-[0_4px_16px_rgba(37,214,176,0.35)]'
+                  : 'text-[#737A95] hover:text-white'
               )}
             >
               Shashikant {activeViewer === 'shashikant' ? '(Me)' : ''}
@@ -312,10 +312,10 @@ export function AddExpensePage() {
               type="button"
               onClick={() => setPaidBy('nitesh')}
               className={cn(
-                'py-2.5 rounded-lg text-sm font-bold transition-all min-h-[44px]',
+                'py-2.5 rounded-xl text-sm font-bold transition-all min-h-[44px]',
                 paidBy === 'nitesh'
-                  ? 'bg-gradient-to-r from-indigo-600 to-violet-500 text-white shadow-plum-glow'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-[0_4px_16px_rgba(129,140,248,0.35)]'
+                  : 'text-[#737A95] hover:text-white'
               )}
             >
               Nitesh {activeViewer === 'nitesh' ? '(Me)' : ''}
@@ -325,7 +325,7 @@ export function AddExpensePage() {
 
         {/* Category Picker */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground block">
+          <label className="text-xs font-semibold text-[#A1A5BC] block">
             Category
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -342,11 +342,11 @@ export function AddExpensePage() {
                   className={cn(
                     'flex flex-col items-center justify-center p-2.5 rounded-xl border text-xs font-medium transition-all min-h-[58px]',
                     isSelected
-                      ? 'border-amber-500 bg-amber-500/15 text-amber-900 dark:text-amber-300 font-bold shadow-sm'
-                      : 'border-border/70 bg-card hover:bg-muted text-muted-foreground'
+                      ? 'border-[#477BFF] bg-[#315BFF]/15 text-white font-bold shadow-[0_0_15px_rgba(49,91,255,0.3)]'
+                      : 'border-white/[0.08] bg-[#15182B] hover:bg-[#1A1E35] text-[#A1A5BC]'
                   )}
                 >
-                  <Icon size={16} className={cn('mb-1', isSelected ? 'text-amber-600 dark:text-amber-400' : '')} />
+                  <Icon size={16} className={cn('mb-1', isSelected ? 'text-[#477BFF]' : 'text-[#737A95]')} />
                   <span>{cat}</span>
                 </button>
               );
@@ -356,18 +356,18 @@ export function AddExpensePage() {
 
         {/* Expense Type (Shared vs Personal) */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-muted-foreground block">
+          <label className="text-xs font-semibold text-[#A1A5BC] block">
             Split Mode
           </label>
-          <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-xl">
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-[#15182B] rounded-2xl border border-white/[0.08]">
             <button
               type="button"
               onClick={() => setType('shared')}
               className={cn(
-                'py-2 rounded-lg text-xs font-semibold transition-all min-h-[40px]',
+                'py-2 rounded-xl text-xs font-bold transition-all min-h-[40px]',
                 type === 'shared'
-                  ? 'bg-forest-800 text-white dark:bg-forest-700 font-bold shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-gradient-to-r from-[#1745D1] to-[#4169FF] text-white shadow-[0_4px_16px_rgba(49,91,255,0.4)]'
+                  : 'text-[#737A95] hover:text-white'
               )}
             >
               Shared (Split 50/50)
@@ -376,10 +376,10 @@ export function AddExpensePage() {
               type="button"
               onClick={() => setType('personal')}
               className={cn(
-                'py-2 rounded-lg text-xs font-semibold transition-all min-h-[40px]',
+                'py-2 rounded-xl text-xs font-bold transition-all min-h-[40px]',
                 type === 'personal'
-                  ? 'bg-forest-800 text-white dark:bg-forest-700 font-bold shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-gradient-to-r from-[#1745D1] to-[#4169FF] text-white shadow-[0_4px_16px_rgba(49,91,255,0.4)]'
+                  : 'text-[#737A95] hover:text-white'
               )}
             >
               Personal (No Split)
@@ -390,8 +390,8 @@ export function AddExpensePage() {
         {/* Date & Optional Quantity in 2 cols */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
+            <label className="text-xs font-semibold text-[#A1A5BC] flex items-center gap-1">
+              <Calendar className="h-3 w-3 text-[#477BFF]" />
               Date
             </label>
             <Input
@@ -403,8 +403,8 @@ export function AddExpensePage() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-              <Package className="h-3 w-3" />
+            <label className="text-xs font-semibold text-[#A1A5BC] flex items-center gap-1">
+              <Package className="h-3 w-3 text-[#477BFF]" />
               Quantity (Optional)
             </label>
             <Input
@@ -418,8 +418,8 @@ export function AddExpensePage() {
 
         {/* Optional Notes */}
         <div className="space-y-1">
-          <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-            <FileText className="h-3 w-3" />
+          <label className="text-xs font-semibold text-[#A1A5BC] flex items-center gap-1">
+            <FileText className="h-3 w-3 text-[#477BFF]" />
             Notes (Optional)
           </label>
           <Input
@@ -432,13 +432,13 @@ export function AddExpensePage() {
 
         {/* Photo / Receipt Capture */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
-            <Camera className="h-3.5 w-3.5" />
+          <label className="text-xs font-semibold text-[#A1A5BC] flex items-center gap-1">
+            <Camera className="h-3.5 w-3.5 text-[#477BFF]" />
             Item Photo / Receipt (Auto-Compressed)
           </label>
 
           {photoPreview ? (
-            <div className="relative rounded-xl overflow-hidden border border-border h-40 bg-black/5">
+            <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] h-40 bg-black/40">
               <img
                 src={photoPreview}
                 alt="Receipt preview"
@@ -454,12 +454,12 @@ export function AddExpensePage() {
               </button>
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-border hover:bg-muted/50 cursor-pointer transition-colors min-h-[80px]">
-              <Upload className="h-5 w-5 text-muted-foreground mb-1" />
-              <span className="text-xs font-medium text-foreground">
+            <label className="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-dashed border-white/[0.08] hover:border-[#477BFF]/40 bg-[#15182B]/60 hover:bg-[#15182B] cursor-pointer transition-all min-h-[80px]">
+              <Upload className="h-5 w-5 text-[#477BFF] mb-1" />
+              <span className="text-xs font-medium text-white">
                 Take photo or pick from gallery
               </span>
-              <span className="text-[10px] text-muted-foreground">
+              <span className="text-[10px] text-[#737A95]">
                 Compressed to &lt; 250KB before upload
               </span>
               <input
@@ -475,9 +475,9 @@ export function AddExpensePage() {
         {/* Save Button */}
         <Button
           type="button"
-          variant="saffron"
+          variant="primary"
           size="huge"
-          className="w-full font-black shadow-josh mt-2 text-slate-950 hover:scale-[1.01] active:scale-[0.98]"
+          className="w-full font-black shadow-[0_8px_30px_rgba(49,91,255,0.55)] bg-gradient-to-r from-[#1745D1] to-[#4169FF] text-white hover:brightness-110 active:scale-[0.98] border border-blue-400/30 mt-2"
           onClick={handleSave}
           disabled={isSubmitting || !amountStr.trim() || !item.trim()}
         >

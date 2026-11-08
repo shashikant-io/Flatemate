@@ -1,7 +1,7 @@
 import React from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, Link } from 'react-router-dom';
 import {
-  Home,
+  LayoutDashboard,
   Receipt,
   Plus,
   BarChart3,
@@ -10,17 +10,40 @@ import {
   Moon,
   Sparkles,
   ArrowRightLeft,
+  ShieldCheck,
+  Zap,
 } from 'lucide-react';
 import { useTheme } from '@/context/ThemeContext';
+import { useFlat } from '@/context/FlatContext';
+import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { OfflineBanner } from '@/components/common/OfflineBanner';
 
 export function AppShell() {
   const { resolvedTheme, toggleTheme } = useTheme();
+  const { currentMemberId, flatName } = useFlat();
+  const { member: authMember } = useAuth();
   const location = useLocation();
 
+  const activeUser = authMember || currentMemberId || 'shashikant';
+  const displayName = activeUser === 'shashikant' ? 'Shashikant' : 'Nitesh';
+
+  const todayStr = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  }).format(new Date());
+
   const navItems = [
-    { label: 'Home', path: '/', icon: Home },
+    { label: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { label: 'Transactions', path: '/history', icon: Receipt },
+    { label: 'Settle Up', path: '/settle', icon: ArrowRightLeft },
+    { label: 'Reports', path: '/reports', icon: BarChart3 },
+    { label: 'Profile', path: '/profile', icon: User },
+  ];
+
+  const mobileNavItems = [
+    { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'History', path: '/history', icon: Receipt },
     { label: 'Add', path: '/add', icon: Plus, isAdd: true },
     { label: 'Reports', path: '/reports', icon: BarChart3 },
@@ -28,132 +51,180 @@ export function AppShell() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground md:flex-row">
-      {/* Desktop Sidebar (hidden on mobile) */}
-      <aside className="hidden md:flex md:w-64 md:flex-col md:border-r md:border-border md:bg-card/70 md:p-6 md:backdrop-blur-md">
-        <div className="flex items-center space-x-3 mb-8">
-          <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#051F20] via-[#0B2B26] to-[#163832] flex items-center justify-center text-amber-300 font-heading font-black text-xl shadow-[0_0_18px_rgba(245,158,11,0.35)] border border-amber-400/40">
+    <div className="flex min-h-screen flex-col bg-[#080914] text-white md:flex-row antialiased selection:bg-[#315BFF] selection:text-white">
+      {/* Desktop Sidebar (Inspired by Reference Images 2 & 3) */}
+      <aside className="hidden md:flex md:w-64 md:flex-col md:border-r md:border-white/[0.08] md:bg-[#0B0C19] md:p-5 md:shrink-0">
+        {/* Brand Logo Header */}
+        <div className="flex items-center space-x-3 mb-6 px-1">
+          <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#1745D1] to-[#4169FF] flex items-center justify-center text-white font-heading font-black text-lg shadow-[0_0_20px_rgba(49,91,255,0.45)] border border-blue-400/30">
             FM
           </div>
           <div>
-            <h1 className="font-heading font-extrabold text-xl tracking-tight text-foreground">FlatMate</h1>
-            <p className="text-xs text-muted-foreground font-medium">Shashikant & Nitesh</p>
+            <h1 className="font-heading font-bold text-lg tracking-tight text-white leading-tight">
+              FlatMate
+            </h1>
+            <p className="text-[11px] text-[#737A95] font-medium">Shared Finance</p>
           </div>
         </div>
 
-        <nav className="space-y-2 flex-1">
+        {/* User Welcome Card (NeuroBank Style) */}
+        <div className="p-3.5 rounded-2xl bg-[#101120] border border-white/[0.08] mb-6 relative overflow-hidden">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div
+                className={cn(
+                  'h-8 w-8 rounded-xl flex items-center justify-center font-heading font-black text-xs text-white shadow-sm',
+                  activeUser === 'shashikant'
+                    ? 'bg-gradient-to-br from-teal-500 to-emerald-500'
+                    : 'bg-gradient-to-br from-indigo-500 to-violet-500'
+                )}
+              >
+                {displayName[0]}
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#737A95]">
+                {activeUser === 'shashikant' ? 'Shashi' : 'Nitesh'}
+              </span>
+            </div>
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="p-1.5 rounded-lg border border-white/[0.08] bg-[#15182B] text-[#A1A5BC] hover:text-white transition-colors"
+            >
+              {resolvedTheme === 'dark' ? <Moon className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+          <p className="text-[10px] uppercase font-semibold text-[#737A95] tracking-wider leading-none">
+            {todayStr}
+          </p>
+          <h2 className="text-sm font-bold text-white mt-1 leading-snug">
+            Welcome back, {displayName}!
+          </h2>
+        </div>
+
+        {/* Navigation Items */}
+        <nav className="space-y-1.5 flex-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-
-            if (item.isAdd) {
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    'flex items-center space-x-3 px-4 py-3.5 rounded-2xl font-heading font-black text-sm transition-all my-4 shadow-josh',
-                    'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-slate-950 hover:brightness-105 active:scale-[0.98]'
-                  )}
-                >
-                  <Plus className="h-5 w-5 stroke-[3]" />
-                  <span>Add Expense</span>
-                </NavLink>
-              );
-            }
 
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  'flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all',
+                  'flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
                   isActive
-                    ? 'bg-forest-800 text-white dark:bg-forest-700 font-bold shadow-sm border border-forest-600/30'
-                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    ? 'bg-[#15182B] text-white font-semibold border border-white/[0.08] shadow-[0_4px_20px_rgba(0,0,0,0.3)]'
+                    : 'text-[#A1A5BC] hover:bg-[#15182B]/60 hover:text-white'
                 )}
               >
-                <Icon className={cn("h-5 w-5", isActive && "text-amber-400 stroke-[2.5]")} />
+                <Icon
+                  className={cn(
+                    'h-4 w-4',
+                    isActive ? 'text-[#477BFF] stroke-[2.2]' : 'text-[#737A95]'
+                  )}
+                />
                 <span>{item.label}</span>
               </NavLink>
             );
           })}
-
-          <NavLink
-            to="/settle"
-            className={cn(
-              'flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-muted-foreground hover:bg-muted hover:text-foreground'
-            )}
-          >
-            <ArrowRightLeft className="h-5 w-5" />
-            <span>Settle Up</span>
-          </NavLink>
         </nav>
 
-        {/* Sidebar Footer */}
-        <div className="pt-6 border-t border-border flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-xs text-muted-foreground">Live Synced</span>
-          </div>
-          <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="p-2 rounded-xl border border-border hover:bg-muted transition-colors"
+        {/* Sidebar Footer Callout Card (Reference Image 2 Activate FlatMate Pro Style) */}
+        <div className="pt-4 mt-auto">
+          <Link
+            to="/add"
+            className="flex items-center space-x-3 px-4 py-3 rounded-2xl font-heading font-bold text-sm transition-all shadow-[0_8px_25px_-4px_rgba(49,91,255,0.5)] bg-gradient-to-r from-[#1745D1] to-[#4169FF] text-white hover:brightness-110 active:scale-[0.98] border border-blue-400/30 mb-3"
           >
-            {resolvedTheme === 'dark' ? (
-              <Sun className="h-4 w-4 text-amber-400" />
-            ) : (
-              <Moon className="h-4 w-4 text-slate-700" />
-            )}
-          </button>
+            <Plus className="h-4 w-4 stroke-[2.75]" />
+            <span>Add Expense</span>
+          </Link>
+
+          <div className="p-3 rounded-xl bg-[#101120] border border-white/[0.08] flex items-center justify-between text-xs">
+            <div className="flex items-center space-x-2">
+              <span className="h-2 w-2 rounded-full bg-[#25D6B0] shadow-[0_0_8px_#25D6B0] animate-pulse"></span>
+              <span className="text-[11px] font-medium text-[#A1A5BC]">Live Synced</span>
+            </div>
+            <span className="text-[10px] text-[#737A95] font-mono">v2.0</span>
+          </div>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen bg-[#080914] overflow-x-hidden">
         <OfflineBanner />
+
+        {/* Desktop Top Header Bar (With + Add Expense and Quick Links) */}
+        <header className="hidden md:flex items-center justify-between px-8 py-4 border-b border-white/[0.08] bg-[#080914]/80 backdrop-blur-md sticky top-0 z-20">
+          <div className="flex items-center space-x-2">
+            <span className="text-xs uppercase tracking-wider font-semibold text-[#737A95]">
+              Household Workspace
+            </span>
+            <span className="text-xs text-[#737A95]">•</span>
+            <span className="text-xs font-semibold text-white px-2.5 py-0.5 rounded-full bg-[#15182B] border border-white/[0.08]">
+              {flatName || 'Shashikant & Nitesh Flat'}
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <Link to="/settle">
+              <button className="px-3.5 py-2 rounded-xl text-xs font-medium text-[#A1A5BC] hover:text-white bg-[#15182B] hover:bg-[#1A1E35] border border-white/[0.08] transition-all flex items-center gap-1.5">
+                <ArrowRightLeft className="h-3.5 w-3.5 text-[#477BFF]" />
+                <span>Settle Up</span>
+              </button>
+            </Link>
+
+            <Link to="/add">
+              <button className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#1745D1] to-[#4169FF] hover:brightness-110 shadow-[0_6px_20px_-3px_rgba(49,91,255,0.45)] border border-blue-400/25 transition-all flex items-center gap-1.5 active:scale-95">
+                <Plus className="h-4 w-4 stroke-[2.75]" />
+                <span>+ Add Expense</span>
+              </button>
+            </Link>
+          </div>
+        </header>
+
         {/* Mobile Header (hidden on desktop) */}
-        <header className="sticky top-0 z-30 flex md:hidden items-center justify-between px-5 py-3.5 bg-background/90 backdrop-blur-md border-b border-border/80">
+        <header className="sticky top-0 z-30 flex md:hidden items-center justify-between px-4 py-3 bg-[#080914]/90 backdrop-blur-xl border-b border-white/[0.08]">
           <div className="flex items-center space-x-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#051F20] via-[#0B2B26] to-[#163832] flex items-center justify-center text-amber-300 font-heading font-black text-sm shadow-[0_0_14px_rgba(245,158,11,0.35)] border border-amber-400/35">
+            <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#1745D1] to-[#4169FF] flex items-center justify-center text-white font-heading font-black text-xs shadow-[0_0_14px_rgba(49,91,255,0.4)] border border-blue-400/30">
               FM
             </div>
             <div>
-              <span className="font-heading font-extrabold text-lg tracking-tight text-foreground block leading-tight">FlatMate</span>
-              <span className="text-[10px] text-muted-foreground font-medium">Shashikant & Nitesh</span>
+              <span className="font-heading font-bold text-base tracking-tight text-white block leading-tight">
+                FlatMate
+              </span>
+              <span className="text-[10px] text-[#737A95] font-medium">
+                {displayName} active
+              </span>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mr-1">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Live</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#25D6B0]/10 border border-[#25D6B0]/20">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#25D6B0] animate-pulse"></span>
+              <span className="text-[10px] font-semibold text-[#25D6B0]">Live</span>
             </div>
+
             <button
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="p-2 rounded-xl border border-border/80 bg-card/60 backdrop-blur-sm text-foreground active:scale-95 transition-transform min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 rounded-xl border border-white/[0.08] bg-[#101120] text-[#A1A5BC] hover:text-white active:scale-95 transition-transform min-h-[40px] min-w-[40px] flex items-center justify-center"
             >
-              {resolvedTheme === 'dark' ? (
-                <Sun className="h-4 w-4 text-amber-300" />
-              ) : (
-                <Moon className="h-4 w-4 text-forest-900" />
-              )}
+              {resolvedTheme === 'dark' ? <Moon className="h-4 w-4 text-[#477BFF]" /> : <Sun className="h-4 w-4 text-[#FFBD59]" />}
             </button>
           </div>
         </header>
 
         {/* Page Container */}
-        <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-5 md:px-8 md:py-8 pb-28 md:pb-12">
+        <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-6 md:px-8 md:py-8 pb-28 md:pb-12">
           <Outlet />
         </main>
       </div>
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-card/95 backdrop-blur-lg border-t border-border/80 px-2 pt-1 pb-safe shadow-lg">
+      <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-[#0B0C19]/95 backdrop-blur-xl border-t border-white/[0.08] px-2 pt-1 pb-safe shadow-2xl">
         <div className="flex items-center justify-around h-16 max-w-lg mx-auto relative">
-          {navItems.map((item) => {
+          {mobileNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
 
@@ -165,8 +236,8 @@ export function AppShell() {
                   aria-label="Add expense"
                   className={cn(
                     'relative -top-5 flex flex-col items-center justify-center',
-                    'h-14 w-14 rounded-full bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 text-slate-950 shadow-josh border-4 border-background',
-                    'active:scale-90 transition-all duration-150 focus-visible:ring-2 focus-visible:ring-amber-500 hover:brightness-105'
+                    'h-14 w-14 rounded-full bg-gradient-to-tr from-[#1745D1] to-[#4169FF] text-white shadow-[0_10px_30px_rgba(49,91,255,0.6)] border-4 border-[#080914]',
+                    'active:scale-90 transition-all duration-150 focus-visible:ring-2 focus-visible:ring-[#315BFF] hover:brightness-110'
                   )}
                 >
                   <Plus className="h-7 w-7 stroke-[3]" />
@@ -181,13 +252,15 @@ export function AppShell() {
                 className={cn(
                   'flex flex-col items-center justify-center flex-1 h-full py-1 text-xs font-medium transition-colors min-h-[44px]',
                   isActive
-                    ? 'text-amber-600 dark:text-amber-400 font-extrabold'
-                    : 'text-muted-foreground hover:text-foreground active:scale-95'
+                    ? 'text-[#477BFF] font-bold'
+                    : 'text-[#737A95] hover:text-[#A1A5BC] active:scale-95'
                 )}
               >
-                <Icon className={cn('h-5 w-5 mb-0.5', isActive && 'stroke-[2.5]')} />
+                <Icon className={cn('h-5 w-5 mb-0.5', isActive && 'stroke-[2.4]')} />
                 <span className="text-[11px] leading-tight">{item.label}</span>
-                {isActive && <span className="h-1 w-1 rounded-full bg-amber-500 mt-0.5 animate-fade-in" />}
+                {isActive && (
+                  <span className="h-1 w-1 rounded-full bg-[#477BFF] mt-0.5 animate-fade-in shadow-[0_0_6px_#477BFF]" />
+                )}
               </NavLink>
             );
           })}

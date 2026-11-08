@@ -6,96 +6,100 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
+        background: '#080914',
+        foreground: '#FFFFFF',
+        sidebar: {
+          DEFAULT: '#0B0C19',
+          foreground: '#FFFFFF',
+        },
         card: {
-          DEFAULT: 'var(--card)',
-          foreground: 'var(--card-foreground)',
+          DEFAULT: '#101120',
+          foreground: '#FFFFFF',
         },
         popover: {
-          DEFAULT: 'var(--popover)',
-          foreground: 'var(--popover-foreground)',
+          DEFAULT: '#101120',
+          foreground: '#FFFFFF',
         },
         primary: {
-          DEFAULT: 'var(--primary)',
-          foreground: 'var(--primary-foreground)',
+          DEFAULT: '#315BFF',
+          foreground: '#FFFFFF',
         },
         secondary: {
-          DEFAULT: 'var(--secondary)',
-          foreground: 'var(--secondary-foreground)',
+          DEFAULT: '#15182B',
+          foreground: '#FFFFFF',
         },
         muted: {
-          DEFAULT: 'var(--muted)',
-          foreground: 'var(--muted-foreground)',
+          DEFAULT: '#15182B',
+          foreground: '#737A95',
         },
         accent: {
-          DEFAULT: 'var(--accent)',
-          foreground: 'var(--accent-foreground)',
+          DEFAULT: '#477BFF',
+          foreground: '#FFFFFF',
         },
         destructive: {
-          DEFAULT: 'var(--destructive)',
-          foreground: 'var(--destructive-foreground)',
+          DEFAULT: '#EF4444',
+          foreground: '#FFFFFF',
         },
-        border: 'var(--border)',
-        input: 'var(--input)',
-        ring: 'var(--ring)',
+        border: 'rgba(255, 255, 255, 0.08)',
+        input: 'rgba(255, 255, 255, 0.08)',
+        ring: '#315BFF',
 
-        // Forest Green Luxury foundation
-        forest: {
-          900: '#051F20',
-          800: '#0B2B26',
-          700: '#163832',
-          600: '#235347',
+        // Premium Dark Fintech Palette
+        dark: {
+          main: '#080914',
+          sidebar: '#0B0C19',
+          card: '#101120',
+          secondary: '#15182B',
         },
-        sage: {
-          DEFAULT: '#8EB69B',
-          light: '#A4C6AF',
-          dark: '#6E987B',
+        blue: {
+          primary: '#315BFF',
+          electric: '#477BFF',
+          dark: '#1745D1',
         },
-        mint: {
-          DEFAULT: '#DAF1DE',
-          light: '#EFF8F2',
-          dark: '#BDE3C4',
+        text: {
+          primary: '#FFFFFF',
+          secondary: '#A1A5BC',
+          muted: '#737A95',
         },
+        success: '#25D6B0',
+        warning: '#FFBD59',
 
-        // Energetic Saffron Amber CTA & Accent ("Josh")
-        saffron: {
-          DEFAULT: '#F59E0B',
-          light: '#FBBF24',
-          dark: '#D97706',
-        },
-
-        // Distinct Flatmate Pair
+        // Flatmate Pair within fintech palette
         shashikant: {
-          DEFAULT: 'var(--teal)',
-          subtle: 'var(--teal-subtle)',
+          DEFAULT: '#25D6B0',
+          subtle: 'rgba(37, 214, 176, 0.15)',
         },
         nitesh: {
-          DEFAULT: 'var(--plum)',
-          subtle: 'var(--plum-subtle)',
+          DEFAULT: '#818CF8',
+          subtle: 'rgba(129, 140, 248, 0.15)',
         },
-        ink: 'var(--ink)',
+        ink: '#FFFFFF',
       },
       borderRadius: {
-        lg: 'var(--radius)',
-        md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-        card: '22px',
+        lg: '1.25rem',
+        md: '1rem',
+        sm: '0.75rem',
+        card: '24px',
         hero: '28px',
       },
       fontFamily: {
-        heading: ['"Bricolage Grotesque"', 'sans-serif'],
-        body: ['Figtree', 'sans-serif'],
-        sans: ['Figtree', 'sans-serif'],
+        sans: ['Inter', 'Plus Jakarta Sans', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 4px 20px -2px rgba(6, 29, 26, 0.05), 0 2px 6px -1px rgba(6, 29, 26, 0.03)',
-        'card-hover': '0 10px 25px -3px rgba(6, 29, 26, 0.09), 0 4px 10px -2px rgba(6, 29, 26, 0.04)',
-        raised: '0 8px 30px -4px rgba(245, 158, 11, 0.45)',
-        josh: '0 10px 30px -4px rgba(245, 158, 11, 0.55), 0 4px 12px -2px rgba(245, 158, 11, 0.35)',
-        'teal-glow': '0 8px 25px -4px rgba(13, 148, 136, 0.45)',
-        'plum-glow': '0 8px 25px -4px rgba(99, 102, 241, 0.45)',
-        'emerald-glow': '0 8px 25px -4px rgba(16, 185, 129, 0.4)',
+        card: '0 8px 32px 0 rgba(0, 0, 0, 0.36)',
+        'card-hover': '0 12px 36px 0 rgba(49, 91, 255, 0.15), 0 0 0 1px rgba(71, 123, 255, 0.3)',
+        raised: '0 8px 30px -4px rgba(49, 91, 255, 0.5)',
+        josh: '0 10px 30px -4px rgba(49, 91, 255, 0.55)',
+        glow: '0 0 25px -4px rgba(49, 91, 255, 0.45)',
+        'glow-sm': '0 0 15px -3px rgba(49, 91, 255, 0.35)',
+        'teal-glow': '0 8px 25px -4px rgba(37, 214, 176, 0.45)',
+        'plum-glow': '0 8px 25px -4px rgba(129, 140, 248, 0.45)',
+      },
+      backgroundImage: {
+        'gradient-primary': 'linear-gradient(135deg, #1745D1 0%, #4169FF 100%)',
+        'gradient-card': 'linear-gradient(180deg, rgba(21, 24, 43, 0.7) 0%, rgba(16, 17, 32, 0.95) 100%)',
       },
       animation: {
         'fade-in': 'fadeIn 0.25s ease-out forwards',

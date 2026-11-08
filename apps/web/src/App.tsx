@@ -17,11 +17,11 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
-        <div className="h-12 w-12 rounded-2xl bg-saffron text-ink flex items-center justify-center font-heading font-black text-xl animate-pulse shadow-raised mb-4">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#080914]">
+        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#1745D1] to-[#4169FF] text-white flex items-center justify-center font-heading font-black text-2xl animate-pulse shadow-[0_0_25px_rgba(49,91,255,0.45)] border border-white/20 mb-4">
           FM
         </div>
-        <p className="text-sm font-medium text-muted-foreground animate-pulse">
+        <p className="text-xs font-semibold text-[#A1A5BC] tracking-wide animate-pulse">
           Opening FlatMate...
         </p>
       </div>

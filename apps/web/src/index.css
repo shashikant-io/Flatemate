@@ -2,101 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer base {
-  :root {
-    /* Crisp clean fintech surface with subtle warm ambient tint */
-    --background: #F4F7F5;
-    --foreground: #051F20;
-    --ink: #051F20;
-    --card: #FFFFFF;
-    --card-foreground: #051F20;
-    --popover: #FFFFFF;
-    --popover-foreground: #051F20;
+  :root,
+  .dark {
+    /* Main Background: #080914 */
+    --background: #080914;
+    --foreground: #FFFFFF;
+    --ink: #FFFFFF;
 
-    /* Deep Forest foundation from user swatch */
-    --primary: #0B2B26;
+    /* Card Background: #101120 */
+    --card: #101120;
+    --card-foreground: #FFFFFF;
+    --popover: #101120;
+    --popover-foreground: #FFFFFF;
+
+    /* Sidebar Background: #0B0C19 */
+    --sidebar: #0B0C19;
+    --sidebar-foreground: #FFFFFF;
+
+    /* Secondary Background: #15182B */
+    --secondary: #15182B;
+    --secondary-foreground: #FFFFFF;
+
+    /* Text hierarchy */
+    --primary-text: #FFFFFF;
+    --secondary-text: #A1A5BC;
+    --muted: #15182B;
+    --muted-foreground: #737A95;
+
+    /* Primary & Electric Blue */
+    --primary: #315BFF;
     --primary-foreground: #FFFFFF;
+    --electric: #477BFF;
+    --blue-dark: #1745D1;
 
-    /* Soft surfaces */
-    --secondary: #EAF3EC;
-    --secondary-foreground: #0B2B26;
-    --muted: #EBF2ED;
-    --muted-foreground: #4B6358;
+    /* Border: rgba(255,255,255,0.08) */
+    --border: rgba(255, 255, 255, 0.08);
+    --input: rgba(255, 255, 255, 0.08);
+    --ring: #315BFF;
 
-    /* High-Voltage Saffron Amber Accent ("JOSH" / Energy & Fire) */
-    --accent: #F59E0B;
-    --accent-foreground: #051F20;
-    --saffron: #F59E0B;
-    --saffron-bright: #FBBF24;
-    --saffron-glow: rgba(245, 158, 11, 0.45);
-
-    /* Distinct Flatmate Energetic Pair */
-    --teal: #0D9488;          /* Shashikant: Energetic Jade Teal */
-    --teal-glow: #14B8A6;
-    --teal-subtle: #CCFBF1;
-    --plum: #6366F1;          /* Nitesh: Vibrant Royal Indigo */
-    --plum-glow: #818CF8;
-    --plum-subtle: #EEF2FF;
-
-    /* Deep Forest palette from swatch */
-    --forest-900: #051F20;
-    --forest-800: #0B2B26;
-    --forest-700: #163832;
-    --forest-600: #235347;
-    --sage-400: #8EB69B;
-    --mint-100: #DAF1DE;
-
+    /* Status */
+    --success: #25D6B0;
+    --warning: #FFBD59;
     --destructive: #EF4444;
     --destructive-foreground: #FFFFFF;
-    --border: #DCE7DF;
-    --input: #DCE7DF;
-    --ring: #F59E0B;
-    --radius: 0.85rem;
-  }
 
-  .dark {
-    /* Deep midnight emerald abyss */
-    --background: #051715;
-    --foreground: #F8FAFC;
-    --ink: #F8FAFC;
-    --card: #0A2420;
-    --card-foreground: #F8FAFC;
-    --popover: #0A2420;
-    --popover-foreground: #F8FAFC;
+    /* Flatmate Identity Accents */
+    --shashikant: #25D6B0;
+    --nitesh: #818CF8;
 
-    --primary: #F59E0B;
-    --primary-foreground: #051715;
-
-    --secondary: #163832;
-    --secondary-foreground: #F8FAFC;
-    --muted: #11312A;
-    --muted-foreground: #8FA69B;
-
-    --accent: #F59E0B;
-    --accent-foreground: #051715;
-    --saffron: #F59E0B;
-    --saffron-bright: #FCD34D;
-    --saffron-glow: rgba(245, 158, 11, 0.55);
-
-    --teal: #14B8A6;
-    --teal-glow: #2DD4BF;
-    --teal-subtle: rgba(20, 184, 166, 0.22);
-    --plum: #818CF8;
-    --plum-glow: #A5B4FC;
-    --plum-subtle: rgba(129, 140, 248, 0.22);
-
-    --forest-900: #051F20;
-    --forest-800: #0B2B26;
-    --forest-700: #163832;
-    --forest-600: #235347;
-    --sage-400: #8EB69B;
-    --mint-100: #DAF1DE;
-
-    --destructive: #F87171;
-    --destructive-foreground: #051715;
-    --border: #1C453C;
-    --input: #1C453C;
-    --ring: #F59E0B;
+    --radius: 1.25rem;
   }
 }
 
@@ -106,8 +65,9 @@
   }
 
   html {
-    font-family: 'Figtree', sans-serif;
+    font-family: 'Inter', sans-serif;
     -webkit-tap-highlight-color: transparent;
+    color-scheme: dark;
   }
 
   body {
@@ -120,8 +80,37 @@
   }
 
   h1, h2, h3, h4, .font-heading {
-    font-family: 'Bricolage Grotesque', sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
   }
+}
+
+/* Glass & Fintech Utilities */
+.glass-card {
+  background: #101120;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+}
+
+.glass-card-hover {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-hover:hover {
+  border-color: rgba(71, 123, 255, 0.3);
+  box-shadow: 0 12px 36px 0 rgba(49, 91, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.blue-glow {
+  box-shadow: 0 0 25px -4px rgba(49, 91, 255, 0.5);
+}
+
+.blue-gradient-btn {
+  background: linear-gradient(135deg, #1745D1 0%, #4169FF 100%);
+  color: #FFFFFF;
+  box-shadow: 0 8px 25px -4px rgba(49, 91, 255, 0.5);
+}
+.blue-gradient-btn:hover {
+  filter: brightness(1.08);
 }
 
 /* Custom scrollbar */
@@ -135,12 +124,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(11, 43, 38, 0.25);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(11, 43, 38, 0.45);
+  background: rgba(71, 123, 255, 0.4);
 }
 
 /* Print Styles for PDF Export */
@@ -153,8 +142,8 @@
   }
 
   body {
-    background: #ffffff !important;
-    color: #000000 !important;
+    background: #080914 !important;
+    color: #ffffff !important;
     padding: 0 !important;
   }
 
@@ -166,7 +155,7 @@
   .rounded-card,
   .rounded-hero {
     box-shadow: none !important;
-    border: 1px solid #d1d5db !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
     break-inside: avoid;
   }
 }
