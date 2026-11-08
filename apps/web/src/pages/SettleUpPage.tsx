@@ -14,7 +14,6 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useFlat } from '@/context/FlatContext';
-import { useAuth } from '@/context/AuthContext';
 import {
   formatINR,
   rupeesToPaise,
@@ -25,22 +24,21 @@ import { cn } from '@/lib/utils';
 
 export function SettleUpPage() {
   const {
-    currentMemberId,
     currentMonth,
     calculation,
+    members,
     settlements,
     addSettlement,
     markSettlementCompleted,
   } = useFlat();
-  const { member: authMember } = useAuth();
-
-  const activeViewer = (authMember || currentMemberId) as 'shashikant' | 'nitesh';
+  const firstMember = members[0] || { id: 'member-a', name: 'Member 1' };
+  const secondMember = members[1] || { id: 'member-b', name: 'Member 2' };
 
   // Find who owes whom from calculation
   const primaryTransfer = calculation.settlementTransfers[0] || null;
 
-  const defaultFrom = primaryTransfer ? primaryTransfer.from : 'nitesh';
-  const defaultTo = primaryTransfer ? primaryTransfer.to : 'shashikant';
+  const defaultFrom = primaryTransfer ? primaryTransfer.from : secondMember.id;
+  const defaultTo = primaryTransfer ? primaryTransfer.to : firstMember.id;
   const defaultAmount = primaryTransfer ? paiseToRupees(primaryTransfer.amountPaise) : '';
 
   const [fromMember, setFromMember] = useState<string>(defaultFrom);
@@ -115,7 +113,7 @@ export function SettleUpPage() {
           Settle Up
         </h2>
         <p className="text-xs text-[#737A95]">
-          Clear balances between Shashikant & Nitesh
+          Clear balances between flat members
         </p>
       </div>
 
@@ -154,8 +152,8 @@ export function SettleUpPage() {
                 </span>
                 <span className="font-heading font-black text-xl text-white">
                   {primaryTransfer
-                    ? `${primaryTransfer.from === 'shashikant' ? 'Shashikant' : 'Nitesh'} owes ${
-                        primaryTransfer.to === 'shashikant' ? 'Shashikant' : 'Nitesh'
+                    ? `${members.find((member) => member.id === primaryTransfer.from)?.name || primaryTransfer.from} owes ${
+                        members.find((member) => member.id === primaryTransfer.to)?.name || primaryTransfer.to
                       } ${formatINR(primaryTransfer.amountPaise)}`
                     : 'Balances even'}
                 </span>
@@ -172,33 +170,33 @@ export function SettleUpPage() {
 
             <div className="grid grid-cols-2 gap-3 text-xs pt-1">
               <div className="p-3.5 rounded-xl bg-[#15182B] border border-white/[0.08]">
-                <span className="text-[#737A95] block font-medium">Shashikant Remaining:</span>
+                <span className="text-[#737A95] block font-medium">{firstMember.name} Remaining:</span>
                 <span
                   className={cn(
                     'font-mono font-black text-sm block mt-0.5',
-                    calculation.remainingBalance['shashikant'] > 0
+                    calculation.remainingBalance[firstMember.id] > 0
                       ? 'text-[#25D6B0]'
-                      : calculation.remainingBalance['shashikant'] < 0
+                      : calculation.remainingBalance[firstMember.id] < 0
                       ? 'text-destructive'
                       : 'text-white'
                   )}
                 >
-                  {formatINR(calculation.remainingBalance['shashikant'] || 0, { showSign: true })}
+                  {formatINR(calculation.remainingBalance[firstMember.id] || 0, { showSign: true })}
                 </span>
               </div>
               <div className="p-3.5 rounded-xl bg-[#15182B] border border-white/[0.08]">
-                <span className="text-[#737A95] block font-medium">Nitesh Remaining:</span>
+                <span className="text-[#737A95] block font-medium">{secondMember.name} Remaining:</span>
                 <span
                   className={cn(
                     'font-mono font-black text-sm block mt-0.5',
-                    calculation.remainingBalance['nitesh'] > 0
+                    calculation.remainingBalance[secondMember.id] > 0
                       ? 'text-[#818CF8]'
-                      : calculation.remainingBalance['nitesh'] < 0
+                      : calculation.remainingBalance[secondMember.id] < 0
                       ? 'text-destructive'
                       : 'text-white'
                   )}
                 >
-                  {formatINR(calculation.remainingBalance['nitesh'] || 0, { showSign: true })}
+                  {formatINR(calculation.remainingBalance[secondMember.id] || 0, { showSign: true })}
                 </span>
               </div>
             </div>
@@ -239,8 +237,9 @@ export function SettleUpPage() {
                 onChange={(e) => setFromMember(e.target.value)}
                 className="w-full h-11 px-3 rounded-xl border border-white/[0.08] bg-[#15182B] text-xs font-semibold text-white focus:outline-none focus:ring-2 focus:ring-[#315BFF] transition-all"
               >
-                <option value="shashikant">Shashikant</option>
-                <option value="nitesh">Nitesh</option>
+                {members.map((member) => (
+                  <option key={member.id} value={member.id}>{member.name}</option>
+                ))}
               </select>
             </div>
 
@@ -253,8 +252,9 @@ export function SettleUpPage() {
                 onChange={(e) => setToMember(e.target.value)}
                 className="w-full h-11 px-3 rounded-xl border border-white/[0.08] bg-[#15182B] text-xs font-semibold text-white focus:outline-none focus:ring-2 focus:ring-[#315BFF] transition-all"
               >
-                <option value="shashikant">Shashikant</option>
-                <option value="nitesh">Nitesh</option>
+                {members.map((member) => (
+                  <option key={member.id} value={member.id}>{member.name}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -426,4 +426,3 @@ export function SettleUpPage() {
     </div>
   );
 }
-

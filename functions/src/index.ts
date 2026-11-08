@@ -6,4 +6,5 @@ admin.initializeApp();
 setGlobalOptions({ region: 'asia-south1' });
 
 export { joinFlat } from './joinFlat.js';
+export { createFlat, updateMemberName } from './joinFlat.js';
 export { closeMonth } from './closeMonth.js';

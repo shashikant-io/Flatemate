@@ -12,6 +12,7 @@ import {
   subscribeToExpenses,
   subscribeToSettlements,
   subscribeToStatements,
+  subscribeToFlat,
   saveExpenseDoc,
   updateExpenseDoc,
   softDeleteExpenseDoc,
@@ -44,12 +45,11 @@ export interface FlatContextType {
   forgetDevice: () => void;
 }
 
-const DEFAULT_MEMBERS: FlatMember[] = [
-  { id: 'shashikant', name: 'Shashikant' },
-  { id: 'nitesh', name: 'Nitesh' },
+const LEGACY_MEMBERS: FlatMember[] = [
+  { id: 'legacy', name: 'Member' },
 ];
-
-const INITIAL_EXPENSES: SyncableExpense[] = [
+/* Legacy data is intentionally not used as a shared-data fallback. */
+/*
   {
     id: 'exp-1',
     item: 'Aashirvaad Atta (10kg) & Rice (5kg)',
@@ -167,8 +167,9 @@ const INITIAL_EXPENSES: SyncableExpense[] = [
     createdBy: 'shashikant',
   },
 ];
+*/
 
-const INITIAL_SETTLEMENTS: SyncableSettlement[] = [
+/*
   {
     id: 'set-1',
     from: 'nitesh',
@@ -182,6 +183,7 @@ const INITIAL_SETTLEMENTS: SyncableSettlement[] = [
     createdBy: 'nitesh',
   },
 ];
+*/
 
 const getLiveCurrentMonth = (): string => {
   const now = new Date();
@@ -201,6 +203,8 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
 
   const [currentMonth, setCurrentMonth] = useState<string>(getLiveCurrentMonth);
   const [closedMonths, setClosedMonths] = useState<string[]>([]);
+  const [members, setMembers] = useState<FlatMember[]>([]);
+  const [flatName, setFlatName] = useState('Shared Flat');
 
   // Automatically update currentMonth if month rolls over while app is open
   useEffect(() => {
@@ -218,13 +222,11 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const [expenses, setExpenses] = useState<SyncableExpense[]>(() => {
-    const saved = localStorage.getItem('flatmate-expenses');
-    return saved ? JSON.parse(saved) : INITIAL_EXPENSES;
+    return [];
   });
 
   const [settlements, setSettlements] = useState<SyncableSettlement[]>(() => {
-    const saved = localStorage.getItem('flatmate-settlements');
-    return saved ? JSON.parse(saved) : INITIAL_SETTLEMENTS;
+    return [];
   });
 
   useEffect(() => {
@@ -237,18 +239,19 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!flatId) return;
 
-    // 1. Subscribe to expenses for currentMonth
+    const unsubscribeFlat = subscribeToFlat(
+      flatId,
+      (flat) => setFlatName(flat.name),
+      (liveMembers) => setMembers(liveMembers),
+      (error) => console.warn('[FlatMate] Flat metadata snapshot error:', error)
+    );
+
+    // 1. Subscribe to all expenses so month navigation and history stay synchronized
     const unsubscribeExpenses = subscribeToExpenses(
       flatId,
       currentMonth,
       (liveExpenses) => {
-        if (liveExpenses.length > 0) {
-          // Merge with any expenses outside currentMonth stored locally
-          setExpenses((prev) => {
-            const otherMonths = prev.filter((e) => !e.date.startsWith(`${currentMonth}-`));
-            return [...liveExpenses, ...otherMonths];
-          });
-        }
+        setExpenses(liveExpenses);
       }
     );
 
@@ -257,12 +260,7 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
       flatId,
       currentMonth,
       (liveSettlements) => {
-        if (liveSettlements.length > 0) {
-          setSettlements((prev) => {
-            const otherMonths = prev.filter((s) => s.forMonth !== currentMonth);
-            return [...liveSettlements, ...otherMonths];
-          });
-        }
+        setSettlements(liveSettlements);
       }
     );
 
@@ -275,6 +273,7 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
       unsubscribeExpenses();
       unsubscribeSettlements();
       unsubscribeStatements();
+      unsubscribeFlat();
     };
   }, [flatId, currentMonth]);
 
@@ -283,18 +282,15 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('flatmate-member', currentMemberId);
   }, [currentMemberId]);
 
-  useEffect(() => {
-    localStorage.setItem('flatmate-expenses', JSON.stringify(expenses));
-  }, [expenses]);
-
-  useEffect(() => {
-    localStorage.setItem('flatmate-settlements', JSON.stringify(settlements));
-  }, [settlements]);
-
   // Pure Calculation Engine evaluation
   const calculation = useMemo(() => {
-    return calculateMonth(expenses, settlements, currentMonth, DEFAULT_MEMBERS);
-  }, [expenses, settlements, currentMonth]);
+    return calculateMonth(
+      expenses,
+      settlements,
+      currentMonth,
+      members.length > 0 ? members : LEGACY_MEMBERS
+    );
+  }, [expenses, settlements, currentMonth, members]);
 
   const addExpense = (data: Omit<Expense, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>) => {
     const id = `exp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -414,8 +410,8 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('flatmate-member');
     localStorage.removeItem('flatmate-expenses');
     localStorage.removeItem('flatmate-settlements');
-    setExpenses(INITIAL_EXPENSES);
-    setSettlements(INITIAL_SETTLEMENTS);
+    setExpenses([]);
+    setSettlements([]);
     setCurrentMemberId('shashikant');
   };
 
@@ -424,8 +420,8 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
       value={{
         currentMemberId,
         setCurrentMemberId,
-        members: DEFAULT_MEMBERS,
-        flatName: 'Flat 204 (Shashikant & Nitesh)',
+        members,
+        flatName,
         currentMonth,
         setCurrentMonth,
         expenses,

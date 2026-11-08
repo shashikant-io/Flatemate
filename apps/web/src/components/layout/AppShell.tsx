@@ -21,12 +21,13 @@ import { OfflineBanner } from '@/components/common/OfflineBanner';
 
 export function AppShell() {
   const { resolvedTheme, toggleTheme } = useTheme();
-  const { currentMemberId, flatName } = useFlat();
-  const { member: authMember } = useAuth();
+  const { currentMemberId, flatName, members } = useFlat();
+  const { member: authMember, memberName } = useAuth();
   const location = useLocation();
 
-  const activeUser = authMember || currentMemberId || 'shashikant';
-  const displayName = activeUser === 'shashikant' ? 'Shashikant' : 'Nitesh';
+  const activeUser = authMember || currentMemberId;
+  const displayName =
+    memberName || members.find((member) => member.id === activeUser)?.name || activeUser;
 
   const todayStr = new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
@@ -74,7 +75,7 @@ export function AppShell() {
               <div
                 className={cn(
                   'h-8 w-8 rounded-xl flex items-center justify-center font-heading font-black text-xs text-white shadow-sm',
-                  activeUser === 'shashikant'
+                  members.findIndex((member) => member.id === activeUser) % 2 === 0
                     ? 'bg-gradient-to-br from-teal-500 to-emerald-500'
                     : 'bg-gradient-to-br from-indigo-500 to-violet-500'
                 )}
@@ -82,7 +83,7 @@ export function AppShell() {
                 {displayName[0]}
               </div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#737A95]">
-                {activeUser === 'shashikant' ? 'Shashi' : 'Nitesh'}
+                {displayName}
               </span>
             </div>
             <button
@@ -269,4 +270,3 @@ export function AppShell() {
     </div>
   );
 }
-

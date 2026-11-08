@@ -23,22 +23,21 @@ import { formatINR, formatSettlementMessage } from '@flatmate/shared';
 import { cn } from '@/lib/utils';
 
 export function HomePage() {
-  const { currentMemberId, currentMonth, expenses, calculation } = useFlat();
+  const { currentMemberId, currentMonth, expenses, calculation, members } = useFlat();
   const { member: authMember } = useAuth();
 
-  const activeViewer = authMember || currentMemberId || 'shashikant';
+  const activeViewer = authMember || currentMemberId;
 
-  const memberNameMap: Record<string, string> = {
-    shashikant: 'Shashikant',
-    nitesh: 'Nitesh',
-  };
+  const memberNameMap = Object.fromEntries(members.map((member) => [member.id, member.name]));
+  const firstMember = members[0] || { id: 'legacy-a', name: 'Member 1' };
+  const secondMember = members[1] || { id: 'legacy-b', name: 'Member 2' };
 
-  const shashikantPaid = calculation.paidPerMember['shashikant'] || 0;
-  const niteshPaid = calculation.paidPerMember['nitesh'] || 0;
-  const totalPaid = shashikantPaid + niteshPaid;
+  const firstMemberPaid = calculation.paidPerMember[firstMember.id] || 0;
+  const secondMemberPaid = calculation.paidPerMember[secondMember.id] || 0;
+  const totalPaid = firstMemberPaid + secondMemberPaid;
 
-  const shashikantPct = totalPaid > 0 ? (shashikantPaid / totalPaid) * 100 : 50;
-  const niteshPct = totalPaid > 0 ? (niteshPaid / totalPaid) * 100 : 50;
+  const firstMemberPct = totalPaid > 0 ? (firstMemberPaid / totalPaid) * 100 : 50;
+  const secondMemberPct = totalPaid > 0 ? (secondMemberPaid / totalPaid) * 100 : 50;
 
   // Settlement message
   let settlementMessage = 'All settled up!';
@@ -306,14 +305,14 @@ export function HomePage() {
                   strokeWidth="10"
                   fill="transparent"
                 />
-                {/* Shashikant Arc */}
+                {/* Primary member contribution arc */}
                 <circle
                   cx="50"
                   cy="50"
                   r="40"
                   stroke="#25D6B0"
                   strokeWidth="10"
-                  strokeDasharray={`${shashikantPct * 2.51} 251`}
+                  strokeDasharray={`${firstMemberPct * 2.51} 251`}
                   strokeLinecap="round"
                   fill="transparent"
                   className="transition-all duration-700"
@@ -321,10 +320,10 @@ export function HomePage() {
               </svg>
               <div className="absolute flex flex-col items-center justify-center text-center">
                 <span className="text-2xl font-heading font-black text-white">
-                  {shashikantPct.toFixed(0)}%
+                  {firstMemberPct.toFixed(0)}%
                 </span>
                 <span className="text-[10px] uppercase font-bold text-[#737A95] tracking-wider">
-                  Shashikant
+                  {firstMember.name}
                 </span>
               </div>
             </div>
@@ -335,19 +334,19 @@ export function HomePage() {
             <div className="flex items-center justify-between text-xs">
               <span className="flex items-center gap-2 text-[#A1A5BC]">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#25D6B0] shadow-[0_0_8px_#25D6B0]" />
-                Shashikant
+                {firstMember.name}
               </span>
               <span className="font-mono font-bold text-white">
-                {formatINR(shashikantPaid)}
+                {formatINR(firstMemberPaid)}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="flex items-center gap-2 text-[#A1A5BC]">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#818CF8] shadow-[0_0_8px_#818CF8]" />
-                Nitesh
+                {secondMember.name}
               </span>
               <span className="font-mono font-bold text-white">
-                {formatINR(niteshPaid)}
+                {formatINR(secondMemberPaid)}
               </span>
             </div>
           </div>
@@ -532,7 +531,7 @@ export function HomePage() {
                       <span
                         className={cn(
                           'font-semibold text-[11px] px-2 py-0.2 rounded-md',
-                          exp.paidBy === 'shashikant'
+                          exp.paidBy === firstMember.id
                             ? 'bg-[#25D6B0]/10 text-[#25D6B0]'
                             : 'bg-[#818CF8]/10 text-[#818CF8]'
                         )}

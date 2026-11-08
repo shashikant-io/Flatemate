@@ -29,14 +29,14 @@ import { cn } from '@/lib/utils';
 
 export function AddExpensePage() {
   const navigate = useNavigate();
-  const { currentMemberId, addExpense } = useFlat();
+  const { currentMemberId, members, addExpense } = useFlat();
   const { member: authMember } = useAuth();
 
-  const activeViewer = (authMember || currentMemberId) as 'shashikant' | 'nitesh';
+  const activeViewer = authMember || currentMemberId;
 
   const [amountStr, setAmountStr] = useState('');
   const [item, setItem] = useState('');
-  const [paidBy, setPaidBy] = useState<'shashikant' | 'nitesh'>(activeViewer);
+  const [paidBy, setPaidBy] = useState<string>(activeViewer);
   const [type, setType] = useState<'shared' | 'personal'>('shared');
   const [category, setCategory] = useState<ExpenseCategory>('Groceries');
   const [date, setDate] = useState(() => {
@@ -127,7 +127,7 @@ export function AddExpensePage() {
       category,
       date,
       month,
-      validMemberIds: ['shashikant', 'nitesh'],
+      validMemberIds: members.map((member) => member.id),
     });
 
     if (!validation.valid) {
@@ -302,30 +302,21 @@ export function AddExpensePage() {
             Who paid?
           </label>
           <div className="grid grid-cols-2 gap-2 p-1.5 bg-[#15182B] rounded-2xl border border-white/[0.08]">
-            <button
-              type="button"
-              onClick={() => setPaidBy('shashikant')}
-              className={cn(
-                'py-2.5 rounded-xl text-sm font-bold transition-all min-h-[44px]',
-                paidBy === 'shashikant'
-                  ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-slate-950 shadow-[0_4px_16px_rgba(37,214,176,0.35)]'
-                  : 'text-[#737A95] hover:text-white'
-              )}
-            >
-              Shashikant {activeViewer === 'shashikant' ? '(Me)' : ''}
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaidBy('nitesh')}
-              className={cn(
-                'py-2.5 rounded-xl text-sm font-bold transition-all min-h-[44px]',
-                paidBy === 'nitesh'
-                  ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-[0_4px_16px_rgba(129,140,248,0.35)]'
-                  : 'text-[#737A95] hover:text-white'
-              )}
-            >
-              Nitesh {activeViewer === 'nitesh' ? '(Me)' : ''}
-            </button>
+            {members.map((member) => (
+              <button
+                key={member.id}
+                type="button"
+                onClick={() => setPaidBy(member.id)}
+                className={cn(
+                  'py-2.5 rounded-xl text-sm font-bold transition-all min-h-[44px]',
+                  paidBy === member.id
+                    ? 'bg-gradient-to-r from-[#1745D1] to-[#4169FF] text-white shadow-[0_4px_16px_rgba(49,91,255,0.35)]'
+                    : 'text-[#737A95] hover:text-white'
+                )}
+              >
+                {member.name} {activeViewer === member.id ? '(Me)' : ''}
+              </button>
+            ))}
           </div>
         </div>
 

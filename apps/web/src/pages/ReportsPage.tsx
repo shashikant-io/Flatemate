@@ -79,8 +79,10 @@ export function ReportsPage() {
     setTimeout(() => setCloseSuccess(false), 3000);
   };
 
-  const shashikantPaid = activeCalc.paidPerMember['shashikant'] || 0;
-  const niteshPaid = activeCalc.paidPerMember['nitesh'] || 0;
+  const firstMember = members[0] || { id: 'member-a', name: 'Member 1' };
+  const secondMember = members[1] || { id: 'member-b', name: 'Member 2' };
+  const firstMemberPaid = activeCalc.paidPerMember[firstMember.id] || 0;
+  const secondMemberPaid = activeCalc.paidPerMember[secondMember.id] || 0;
 
   return (
     <div className="space-y-6 animate-fade-in pb-16 print:p-0">
@@ -184,7 +186,7 @@ export function ReportsPage() {
             Equal Share (50%)
           </span>
           <div className="text-xl md:text-2xl font-heading font-black text-white">
-            {formatINR(activeCalc.sharePerMember['shashikant'] || 0)}
+            {formatINR(activeCalc.sharePerMember[firstMember.id] || 0)}
           </div>
           <span className="text-[10px] text-[#A1A5BC]">Per flatmate</span>
         </Card>
@@ -192,26 +194,26 @@ export function ReportsPage() {
         <Card className="p-4 rounded-2xl bg-[#15182B] border border-white/[0.08] shadow-card space-y-1">
           <span className="text-[10px] text-[#25D6B0] uppercase font-bold tracking-wider flex items-center gap-1">
             <span className="h-1.5 w-1.5 rounded-full bg-[#25D6B0]" />
-            Shashikant Paid
+            {firstMember.name} Paid
           </span>
           <div className="text-xl md:text-2xl font-heading font-black text-[#25D6B0]">
-            {formatINR(shashikantPaid)}
+            {formatINR(firstMemberPaid)}
           </div>
           <span className="text-[10px] text-[#A1A5BC] font-mono">
-            Net: {formatINR(activeCalc.remainingBalance['shashikant'] || 0, { showSign: true })}
+            Net: {formatINR(activeCalc.remainingBalance[firstMember.id] || 0, { showSign: true })}
           </span>
         </Card>
 
         <Card className="p-4 rounded-2xl bg-[#15182B] border border-white/[0.08] shadow-card space-y-1">
           <span className="text-[10px] text-[#818CF8] uppercase font-bold tracking-wider flex items-center gap-1">
             <span className="h-1.5 w-1.5 rounded-full bg-[#818CF8]" />
-            Nitesh Paid
+            {secondMember.name} Paid
           </span>
           <div className="text-xl md:text-2xl font-heading font-black text-[#818CF8]">
-            {formatINR(niteshPaid)}
+            {formatINR(secondMemberPaid)}
           </div>
           <span className="text-[10px] text-[#A1A5BC] font-mono">
-            Net: {formatINR(activeCalc.remainingBalance['nitesh'] || 0, { showSign: true })}
+            Net: {formatINR(activeCalc.remainingBalance[secondMember.id] || 0, { showSign: true })}
           </span>
         </Card>
       </div>
@@ -231,11 +233,11 @@ export function ReportsPage() {
             <div className="flex justify-between text-xs font-semibold">
               <span className="text-[#25D6B0] flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-[#25D6B0]" />
-                Shashikant: {formatINR(shashikantPaid)}
+                {firstMember.name}: {formatINR(firstMemberPaid)}
               </span>
               <span className="text-[#818CF8] flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-[#818CF8]" />
-                Nitesh: {formatINR(niteshPaid)}
+                {secondMember.name}: {formatINR(secondMemberPaid)}
               </span>
             </div>
 
@@ -245,7 +247,7 @@ export function ReportsPage() {
                 style={{
                   width: `${
                     activeCalc.totalPaise > 0
-                      ? (shashikantPaid / activeCalc.totalPaise) * 100
+                      ? (firstMemberPaid / activeCalc.totalPaise) * 100
                       : 50
                   }%`,
                 }}
@@ -255,7 +257,7 @@ export function ReportsPage() {
                 style={{
                   width: `${
                     activeCalc.totalPaise > 0
-                      ? (niteshPaid / activeCalc.totalPaise) * 100
+                      ? (secondMemberPaid / activeCalc.totalPaise) * 100
                       : 50
                   }%`,
                 }}
@@ -264,18 +266,16 @@ export function ReportsPage() {
 
             <div className="p-3.5 rounded-xl bg-[#15182B] border border-white/[0.08] text-xs text-[#A1A5BC] leading-relaxed">
               {activeCalc.settled
-                ? 'Both Shashikant and Nitesh have settled all debts for this cycle.'
+                ? `All ${members.map((member) => member.name).join(' and ')} debts are settled for this cycle.`
                 : activeCalc.settlementTransfers.length > 0
                 ? `${
-                    activeCalc.settlementTransfers[0].from === 'shashikant'
-                      ? 'Shashikant'
-                      : 'Nitesh'
+                    members.find((member) => member.id === activeCalc.settlementTransfers[0].from)?.name ||
+                    activeCalc.settlementTransfers[0].from
                   } needs to pay ${formatINR(
                     activeCalc.settlementTransfers[0].amountPaise
                   )} to ${
-                    activeCalc.settlementTransfers[0].to === 'shashikant'
-                      ? 'Shashikant'
-                      : 'Nitesh'
+                    members.find((member) => member.id === activeCalc.settlementTransfers[0].to)?.name ||
+                    activeCalc.settlementTransfers[0].to
                   } to be fully squared up.`
                 : 'All settled up!'}
             </div>
@@ -300,7 +300,7 @@ export function ReportsPage() {
             </h4>
             <p className="text-xs text-[#A1A5BC] leading-relaxed">
               {activeCalc.totalPaise > 0
-                ? `Total household purchases recorded stand at ${formatINR(activeCalc.totalPaise)}. Split equally, each flatmate owes ${formatINR(activeCalc.sharePerMember['shashikant'] || 0)}.`
+                ? `Total household purchases recorded stand at ${formatINR(activeCalc.totalPaise)}. Split equally, each flatmate owes ${formatINR(activeCalc.sharePerMember[firstMember.id] || 0)}.`
                 : 'No transactions recorded yet for this billing cycle.'}
             </p>
           </div>

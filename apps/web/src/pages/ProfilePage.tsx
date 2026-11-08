@@ -24,10 +24,12 @@ import { cn } from '@/lib/utils';
 
 export function ProfilePage() {
   const { theme, setTheme } = useTheme();
-  const { member: authMember, switchMember, forgetDevice } = useAuth();
+  const { member: authMember, memberName, flatId, switchMember, updateMemberName, forgetDevice } = useAuth();
   const { currentMemberId, flatName } = useFlat();
 
   const activeMember = authMember || currentMemberId;
+  const [displayName, setDisplayName] = useState(memberName || '');
+  const [isSavingName, setIsSavingName] = useState(false);
 
   // Switch member modal state
   const [showSwitchModal, setShowSwitchModal] = useState(false);
@@ -46,7 +48,7 @@ export function ProfilePage() {
     setSwitchError(null);
     setIsSwitching(true);
 
-    const success = await switchMember(targetMember, switchPasscode);
+    const success = await switchMember(flatId || '', switchPasscode, targetMember);
     setIsSwitching(false);
 
     if (success) {
@@ -60,6 +62,13 @@ export function ProfilePage() {
   const handleForgetConfirm = async () => {
     await forgetDevice();
     setShowForgetModal(false);
+  };
+
+  const handleNameSave = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsSavingName(true);
+    await updateMemberName(displayName);
+    setIsSavingName(false);
   };
 
   return (
@@ -85,7 +94,7 @@ export function ProfilePage() {
                 : 'bg-gradient-to-br from-[#818CF8] to-[#4F46E5] shadow-[0_0_20px_rgba(129,140,248,0.35)]'
             )}
           >
-            {activeMember === 'shashikant' ? 'S' : 'N'}
+            {(displayName || activeMember || 'M')[0].toUpperCase()}
             <span className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-[#25D6B0] border-2 border-[#101120] flex items-center justify-center">
               <span className="h-1.5 w-1.5 rounded-full bg-white" />
             </span>
@@ -94,7 +103,7 @@ export function ProfilePage() {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h3 className="font-heading font-bold text-lg capitalize text-white">
-                {activeMember}
+                {memberName || displayName || activeMember}
               </h3>
               <Badge variant={activeMember === 'shashikant' ? 'teal' : 'plum'}>
                 Active Device
@@ -103,6 +112,9 @@ export function ProfilePage() {
             <p className="text-xs text-[#A1A5BC] mt-0.5 flex items-center gap-1.5">
               <Smartphone className="h-3 w-3 text-[#737A95]" />
               {flatName || 'Shashikant & Nitesh Flat'}
+            </p>
+            <p className="text-[11px] text-[#737A95] mt-1 font-mono">
+              Flat ID: {flatId || 'Unavailable'}
             </p>
           </div>
         </div>
@@ -131,6 +143,12 @@ export function ProfilePage() {
             Forget Device
           </Button>
         </div>
+        <form onSubmit={handleNameSave} className="flex gap-2 pt-2 border-t border-white/[0.06]">
+          <Input value={displayName} onChange={(event) => setDisplayName(event.target.value)} className="bg-[#15182B] border-white/[0.08] text-white" aria-label="Display name" />
+          <Button type="submit" size="sm" disabled={isSavingName || displayName.trim().length < 2}>
+            {isSavingName ? 'Saving' : 'Save name'}
+          </Button>
+        </form>
       </Card>
 
       {/* Theme Preference Card */}

@@ -1,111 +1,91 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    function hasValidClaims(flatId) {
-      return isAuthenticated() &&
-        request.auth.token.flatId == flatId &&
-        request.auth.token.member != null;
+    function isMember(flatId) {
+      return request.auth != null
+        && request.auth.token.flatId == flatId
+        && request.auth.token.member != null;
     }
 
     function callerMember() {
       return request.auth.token.member;
     }
 
-    function isMemberOfFlat(flatId, memberId) {
-      let flat = get(/databases/$(database)/documents/flats/$(flatId)).data;
-      return flat.members.hasAny([memberId]) ||
-        (flat.members[0].id == memberId || flat.members[1].id == memberId);
+    function memberExists(flatId, memberId) {
+      return exists(/databases/$(database)/documents/flats/$(flatId)/members/$(memberId));
     }
 
-    function isMonthClosed(flatId, month) {
+    function monthClosed(flatId, month) {
       return exists(/databases/$(database)/documents/flats/$(flatId)/statements/$(month));
     }
 
-    // Rate limiting / brute-force protection records for joinFlat
     match /rateLimits/{limitId} {
-      // Managed solely by Cloud Functions Admin SDK
       allow read, write: if false;
     }
 
     match /flats/{flatId} {
-      allow read: if hasValidClaims(flatId);
-      allow write: if false; // Flat structure is managed by Cloud Functions or initial seed
+      allow read: if isMember(flatId);
+      allow write: if false;
+
+      match /private/{document} {
+        allow read, write: if false;
+      }
+
+      match /members/{memberId} {
+        allow read: if isMember(flatId);
+        allow write: if false;
+      }
 
       match /expenses/{expenseId} {
-        allow read: if hasValidClaims(flatId);
-
-        allow create: if hasValidClaims(flatId)
-          && !isMonthClosed(flatId, request.resource.data.month)
+        allow read: if isMember(flatId);
+        allow create: if isMember(flatId)
+          && memberExists(flatId, request.resource.data.paidBy)
+          && request.resource.data.createdBy == callerMember()
           && request.resource.data.amountPaise is int
-          && request.resource.data.amountPaise >= 1
+          && request.resource.data.amountPaise > 0
           && request.resource.data.amountPaise <= 1000000000
-          && (request.resource.data.type == 'shared' || request.resource.data.type == 'personal')
-          && (request.resource.data.paidBy == 'shashikant' || request.resource.data.paidBy == 'nitesh')
           && request.resource.data.item is string
           && request.resource.data.item.size() >= 1
           && request.resource.data.item.size() <= 80
+          && (request.resource.data.type == 'shared' || request.resource.data.type == 'personal')
           && request.resource.data.date is string
           && request.resource.data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
-          && request.resource.data.month is string
-          && request.resource.data.month.matches('^[0-9]{4}-[0-9]{2}$')
-          && request.resource.data.date.matches('^' + request.resource.data.month + '-[0-9]{2}$')
-          && request.resource.data.createdBy == callerMember();
-
-        allow update: if hasValidClaims(flatId)
-          && !isMonthClosed(flatId, resource.data.month)
-          && !isMonthClosed(flatId, request.resource.data.month)
+          && request.resource.data.month == request.resource.data.date.substring(0, 7)
+          && !monthClosed(flatId, request.resource.data.month);
+        allow update: if isMember(flatId)
+          && memberExists(flatId, request.resource.data.paidBy)
           && request.resource.data.amountPaise is int
-          && request.resource.data.amountPaise >= 1
-          && request.resource.data.amountPaise <= 1000000000
-          && (request.resource.data.type == 'shared' || request.resource.data.type == 'personal')
-          && (request.resource.data.paidBy == 'shashikant' || request.resource.data.paidBy == 'nitesh')
+          && request.resource.data.amountPaise > 0
           && request.resource.data.item is string
           && request.resource.data.item.size() >= 1
           && request.resource.data.item.size() <= 80
-          && request.resource.data.date is string
-          && request.resource.data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
-          && request.resource.data.month is string
-          && request.resource.data.month.matches('^[0-9]{4}-[0-9]{2}$')
-          && request.resource.data.date.matches('^' + request.resource.data.month + '-[0-9]{2}$')
-          && request.resource.data.createdBy == resource.data.createdBy;
-
-        // Hard deletes are denied
+          && !monthClosed(flatId, resource.data.month)
+          && !monthClosed(flatId, request.resource.data.month);
         allow delete: if false;
       }
 
       match /settlements/{settlementId} {
-        allow read: if hasValidClaims(flatId);
-
-        allow create: if hasValidClaims(flatId)
+        allow read: if isMember(flatId);
+        allow create: if isMember(flatId)
+          && memberExists(flatId, request.resource.data.from)
+          && memberExists(flatId, request.resource.data.to)
           && request.resource.data.from != request.resource.data.to
           && request.resource.data.amountPaise is int
           && request.resource.data.amountPaise > 0
-          && request.resource.data.forMonth is string
-          && request.resource.data.forMonth.matches('^[0-9]{4}-[0-9]{2}$')
           && request.resource.data.createdBy == callerMember();
-
-        allow update: if hasValidClaims(flatId)
+        allow update: if isMember(flatId)
+          && memberExists(flatId, request.resource.data.from)
+          && memberExists(flatId, request.resource.data.to)
           && request.resource.data.from != request.resource.data.to
           && request.resource.data.amountPaise is int
-          && request.resource.data.amountPaise > 0
-          && request.resource.data.forMonth is string
-          && request.resource.data.forMonth.matches('^[0-9]{4}-[0-9]{2}$')
-          && request.resource.data.createdBy == resource.data.createdBy;
-
+          && request.resource.data.amountPaise > 0;
         allow delete: if false;
       }
 
       match /statements/{month} {
-        allow read: if hasValidClaims(flatId);
-        // Statements are only written by closeMonth Cloud Function (Admin SDK)
+        allow read: if isMember(flatId);
         allow write: if false;
       }
     }
   }
 }
-

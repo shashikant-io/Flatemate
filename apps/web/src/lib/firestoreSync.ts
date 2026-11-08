@@ -2,7 +2,6 @@ import {
   collection,
   doc,
   query,
-  where,
   orderBy,
   onSnapshot,
   setDoc,
@@ -11,7 +10,7 @@ import {
   Unsubscribe,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Expense, Settlement, Statement } from '@flatmate/shared';
+import { Expense, Settlement, Statement, FlatMember } from '@flatmate/shared';
 
 export interface SyncableExpense extends Expense {
   hasPendingWrites?: boolean;
@@ -21,23 +20,59 @@ export interface SyncableSettlement extends Settlement {
   hasPendingWrites?: boolean;
 }
 
+export interface FlatMetadata {
+  id: string;
+  name: string;
+  createdAt: string;
+  ownerId?: string;
+}
+
+export function subscribeToFlat(
+  flatId: string,
+  onFlat: (flat: FlatMetadata) => void,
+  onMembers: (members: FlatMember[]) => void,
+  onError?: (error: FirestoreError) => void
+): Unsubscribe {
+  const unsubscribeFlat = onSnapshot(
+    doc(db, 'flats', flatId),
+    (snapshot) => {
+      if (snapshot.exists()) {
+        onFlat({ id: snapshot.id, ...(snapshot.data() as Omit<FlatMetadata, 'id'>) });
+      }
+    },
+    onError
+  );
+  const unsubscribeMembers = onSnapshot(
+    collection(db, 'flats', flatId, 'members'),
+    (snapshot) => {
+      onMembers(
+        snapshot.docs.map((member) => ({
+          id: member.id,
+          name: String(member.data().name || 'Member'),
+        }))
+      );
+    },
+    onError
+  );
+  return () => {
+    unsubscribeFlat();
+    unsubscribeMembers();
+  };
+}
+
 /**
- * Listens in real-time to expenses for a given month with metadata tracking.
+ * Listens in real-time to all expenses with metadata tracking.
  * `hasPendingWrites` tells the UI whether an item has been confirmed by the server
  * or is still stored locally awaiting sync.
  */
 export function subscribeToExpenses(
   flatId: string,
-  month: string,
+  _month: string,
   onUpdate: (expenses: SyncableExpense[]) => void,
   onError?: (error: FirestoreError) => void
 ): Unsubscribe {
   const expensesRef = collection(db, 'flats', flatId, 'expenses');
-  const q = query(
-    expensesRef,
-    where('month', '==', month),
-    orderBy('date', 'desc')
-  );
+  const q = query(expensesRef, orderBy('date', 'desc'));
 
   return onSnapshot(
     q,
@@ -62,20 +97,16 @@ export function subscribeToExpenses(
 }
 
 /**
- * Listens in real-time to settlements for a given month with metadata tracking.
+ * Listens in real-time to all settlements with metadata tracking.
  */
 export function subscribeToSettlements(
   flatId: string,
-  month: string,
+  _month: string,
   onUpdate: (settlements: SyncableSettlement[]) => void,
   onError?: (error: FirestoreError) => void
 ): Unsubscribe {
   const settlementsRef = collection(db, 'flats', flatId, 'settlements');
-  const q = query(
-    settlementsRef,
-    where('forMonth', '==', month),
-    orderBy('date', 'desc')
-  );
+  const q = query(settlementsRef, orderBy('date', 'desc'));
 
   return onSnapshot(
     q,
@@ -183,4 +214,3 @@ export async function markSettlementCompletedDoc(
     status: 'completed',
   });
 }
-
