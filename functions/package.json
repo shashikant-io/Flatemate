@@ -1,0 +1,21 @@
+{
+  "name": "flatmate-functions",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
+  "main": "dist/index.js",
+  "dependencies": {
+    "@flatmate/shared": "*",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": "22"
+  }
+}
+

@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function hasValidClaims(flatId) {
+      return isAuthenticated() &&
+        request.auth.token.flatId == flatId &&
+        request.auth.token.member != null;
+    }
+
+    match /flats/{flatId}/{allPaths=**} {
+      // Authorized members can read images
+      allow read: if hasValidClaims(flatId);
+
+      // Writes allowed only for valid image types and <= 2MB
+      allow write: if hasValidClaims(flatId)
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+  }
+}
+

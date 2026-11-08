@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Crisp clean fintech surface with subtle warm ambient tint */
+    --background: #F4F7F5;
+    --foreground: #051F20;
+    --ink: #051F20;
+    --card: #FFFFFF;
+    --card-foreground: #051F20;
+    --popover: #FFFFFF;
+    --popover-foreground: #051F20;
+
+    /* Deep Forest foundation from user swatch */
+    --primary: #0B2B26;
+    --primary-foreground: #FFFFFF;
+
+    /* Soft surfaces */
+    --secondary: #EAF3EC;
+    --secondary-foreground: #0B2B26;
+    --muted: #EBF2ED;
+    --muted-foreground: #4B6358;
+
+    /* High-Voltage Saffron Amber Accent ("JOSH" / Energy & Fire) */
+    --accent: #F59E0B;
+    --accent-foreground: #051F20;
+    --saffron: #F59E0B;
+    --saffron-bright: #FBBF24;
+    --saffron-glow: rgba(245, 158, 11, 0.45);
+
+    /* Distinct Flatmate Energetic Pair */
+    --teal: #0D9488;          /* Shashikant: Energetic Jade Teal */
+    --teal-glow: #14B8A6;
+    --teal-subtle: #CCFBF1;
+    --plum: #6366F1;          /* Nitesh: Vibrant Royal Indigo */
+    --plum-glow: #818CF8;
+    --plum-subtle: #EEF2FF;
+
+    /* Deep Forest palette from swatch */
+    --forest-900: #051F20;
+    --forest-800: #0B2B26;
+    --forest-700: #163832;
+    --forest-600: #235347;
+    --sage-400: #8EB69B;
+    --mint-100: #DAF1DE;
+
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+    --border: #DCE7DF;
+    --input: #DCE7DF;
+    --ring: #F59E0B;
+    --radius: 0.85rem;
+  }
+
+  .dark {
+    /* Deep midnight emerald abyss */
+    --background: #051715;
+    --foreground: #F8FAFC;
+    --ink: #F8FAFC;
+    --card: #0A2420;
+    --card-foreground: #F8FAFC;
+    --popover: #0A2420;
+    --popover-foreground: #F8FAFC;
+
+    --primary: #F59E0B;
+    --primary-foreground: #051715;
+
+    --secondary: #163832;
+    --secondary-foreground: #F8FAFC;
+    --muted: #11312A;
+    --muted-foreground: #8FA69B;
+
+    --accent: #F59E0B;
+    --accent-foreground: #051715;
+    --saffron: #F59E0B;
+    --saffron-bright: #FCD34D;
+    --saffron-glow: rgba(245, 158, 11, 0.55);
+
+    --teal: #14B8A6;
+    --teal-glow: #2DD4BF;
+    --teal-subtle: rgba(20, 184, 166, 0.22);
+    --plum: #818CF8;
+    --plum-glow: #A5B4FC;
+    --plum-subtle: rgba(129, 140, 248, 0.22);
+
+    --forest-900: #051F20;
+    --forest-800: #0B2B26;
+    --forest-700: #163832;
+    --forest-600: #235347;
+    --sage-400: #8EB69B;
+    --mint-100: #DAF1DE;
+
+    --destructive: #F87171;
+    --destructive-foreground: #051715;
+    --border: #1C453C;
+    --input: #1C453C;
+    --ring: #F59E0B;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family: 'Figtree', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    min-height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(11, 43, 38, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(11, 43, 38, 0.45);
+}
+
+/* Print Styles for PDF Export */
+@media print {
+  aside,
+  header,
+  nav,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .rounded-card,
+  .rounded-hero {
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+    break-inside: avoid;
+  }
+}
