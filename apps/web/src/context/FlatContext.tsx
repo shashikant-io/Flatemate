@@ -183,6 +183,13 @@ const INITIAL_SETTLEMENTS: SyncableSettlement[] = [
   },
 ];
 
+const getLiveCurrentMonth = (): string => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+};
+
 const FlatContext = createContext<FlatContextType | undefined>(undefined);
 
 export function FlatProvider({ children }: { children: React.ReactNode }) {
@@ -192,8 +199,23 @@ export function FlatProvider({ children }: { children: React.ReactNode }) {
     return authMember || localStorage.getItem('flatmate-member') || 'shashikant';
   });
 
-  const [currentMonth, setCurrentMonth] = useState<string>('2026-11');
-  const [closedMonths, setClosedMonths] = useState<string[]>(['2026-10']);
+  const [currentMonth, setCurrentMonth] = useState<string>(getLiveCurrentMonth);
+  const [closedMonths, setClosedMonths] = useState<string[]>([]);
+
+  // Automatically update currentMonth if month rolls over while app is open
+  useEffect(() => {
+    const handleMonthSync = () => {
+      const live = getLiveCurrentMonth();
+      setCurrentMonth((prev) => (prev !== live ? live : prev));
+    };
+
+    const interval = setInterval(handleMonthSync, 60000);
+    window.addEventListener('visibilitychange', handleMonthSync);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('visibilitychange', handleMonthSync);
+    };
+  }, []);
 
   const [expenses, setExpenses] = useState<SyncableExpense[]>(() => {
     const saved = localStorage.getItem('flatmate-expenses');

@@ -39,7 +39,13 @@ export function AddExpensePage() {
   const [paidBy, setPaidBy] = useState<'shashikant' | 'nitesh'>(activeViewer);
   const [type, setType] = useState<'shared' | 'personal'>('shared');
   const [category, setCategory] = useState<ExpenseCategory>('Groceries');
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [quantity, setQuantity] = useState('');
   const [notes, setNotes] = useState('');
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
